@@ -2,6 +2,13 @@ import { Composer, InlineKeyboard } from 'grammy';
 import { getChildrenForParent } from '../../db/queries/mappings.js';
 import { relayParentToTeacher, relayTeacherToParent, resolveParentFromReply, detectMessageType } from '../../modules/relay/index.js';
 import { getActiveStudent, setActiveStudent } from '../../modules/session/index.js';
+import {
+  handleStartCommand,
+  handleAgree,
+  handleMoreInfo,
+  handleNotNow,
+} from '../../modules/onboarding/index.js';
+import { adminComposer } from '../../modules/admin/index.js';
 import { logger } from '../../lib/logger.js';
 import type { ConduitContext } from '../context.js';
 import type { MessageType } from '../../types/index.js';
@@ -18,10 +25,30 @@ const SUPPORTED_MESSAGE_TYPES: ReadonlySet<MessageType> = new Set([
 
 export const router = new Composer<ConduitContext>();
 
-// ── /start command stub (onboarding Sprint 2) ─────────────────────────────────
+// ── Admin/superadmin command composer ─────────────────────────────────────────
+// Must be registered before the catch-all 'message' handler so that admin
+// commands are intercepted at the Composer level rather than reaching the
+// role-based text fallback below.
+router.use(adminComposer);
+
+// ── /start command — onboarding deep-link entry point ────────────────────────
 
 router.command('start', async (ctx) => {
-  await ctx.reply('Onboarding coming Sprint 2.');
+  await handleStartCommand(ctx);
+});
+
+// ── Callback query handlers (onboarding consent flow) ────────────────────────
+
+router.callbackQuery('onboard_agree', async (ctx) => {
+  await handleAgree(ctx);
+});
+
+router.callbackQuery('onboard_more_info', async (ctx) => {
+  await handleMoreInfo(ctx);
+});
+
+router.callbackQuery('onboard_not_now', async (ctx) => {
+  await handleNotNow(ctx);
 });
 
 // ── Callback query handler (child selection inline keyboard) ──────────────────
@@ -66,11 +93,10 @@ router.on('message', async (ctx) => {
   }
 
   const { role } = ctx.dbUser;
-  const text = ctx.message.text ?? '';
 
-  // 4. Admin/superadmin command stubs
-  if ((role === 'admin' || role === 'superadmin') && text.startsWith('/')) {
-    await ctx.reply('Admin commands coming Sprint 2.');
+  // 4. Admin/superadmin non-command messages are silently dropped here.
+  //    All admin commands are handled by adminComposer registered above.
+  if (role === 'admin' || role === 'superadmin') {
     return;
   }
 

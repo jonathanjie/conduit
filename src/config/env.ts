@@ -4,6 +4,7 @@ import 'dotenv/config';
 const envSchema = z.object({
   // Bot
   BOT_TOKEN: z.string().min(1, 'BOT_TOKEN is required'),
+  BOT_USERNAME: z.string().min(1, 'BOT_USERNAME is required'),
   TELEGRAM_WEBHOOK_SECRET: z.string().min(1, 'TELEGRAM_WEBHOOK_SECRET is required'),
   ADMIN_CHAT_ID: z.string().min(1, 'ADMIN_CHAT_ID is required'),
 
