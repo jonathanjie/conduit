@@ -6,6 +6,17 @@ import { dbHealthCheck } from './db/client.js';
 import { redisHealthCheck } from './lib/redis.js';
 import { bot } from './bot/index.js';
 import { webhookCallback } from 'grammy';
+import { authRoutes } from './api/routes/auth.js';
+import { studentRoutes } from './api/routes/students.js';
+import { mappingRoutes } from './api/routes/mappings.js';
+import { tokenRoutes } from './api/routes/tokens.js';
+import { broadcastRoutes } from './api/routes/broadcasts.js';
+import { userRoutes } from './api/routes/users.js';
+import { dashboardUserRoutes } from './api/routes/dashboard-users.js';
+import { auditRoutes } from './api/routes/audit.js';
+import { systemRoutes } from './api/routes/system.js';
+import { aiRoutes } from './api/routes/ai.js';
+import { paymentRoutes } from './api/routes/payments.js';
 
 const WEBHOOK_SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 
@@ -65,3 +76,17 @@ app.get('/api/v1/health', (c) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// ── Dashboard REST API — Sprint 3 ─────────────────────────────────────────────
+
+app.route('/api/v1', authRoutes);
+app.route('/api/v1', studentRoutes);
+app.route('/api/v1', mappingRoutes);
+app.route('/api/v1', tokenRoutes);
+app.route('/api/v1', broadcastRoutes);
+app.route('/api/v1', userRoutes);
+app.route('/api/v1', dashboardUserRoutes);
+app.route('/api/v1', auditRoutes);
+app.route('/api/v1', systemRoutes);
+app.route('/api/v1', aiRoutes);
+app.route('/api/v1', paymentRoutes);
