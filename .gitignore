@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+*.local
+pgdata/
+redisdata/
+frontend/dist/
+frontend/node_modules/
+*.log
+.DS_Store
