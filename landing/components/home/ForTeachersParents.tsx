@@ -29,12 +29,7 @@ function BenefitList({
 
 export default function ForTeachersParents() {
   return (
-    <section
-      className="relative py-24 md:py-32 px-6 overflow-hidden"
-      style={{
-        background: "linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FFFBEB 100%)",
-      }}
-    >
+    <section className="bg-bg-warm py-24 md:py-32 px-6 nodes-bg">
       <div className="max-w-6xl mx-auto">
         <motion.div
           variants={fadeInUp}

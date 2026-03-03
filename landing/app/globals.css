@@ -82,55 +82,50 @@ h1, h2, h3, h4 {
 .animate-float { animation: floatY 4s ease-in-out infinite; }
 .animate-float-slow { animation: floatY 6s ease-in-out 1s infinite; }
 
-/* Hero background animated gradient */
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.hero-gradient {
-  background: linear-gradient(
-    135deg,
-    #FFFFFF 0%,
-    #F0F9FF 25%,
-    #FFFFFF 50%,
-    #FEF3C7 75%,
-    #FFFFFF 100%
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 25s ease infinite;
+/* Subtle animated nodes for backgrounds */
+@keyframes nodeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
-/* Animated blob for backgrounds */
-@keyframes blobFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(30px, -20px) scale(1.05); }
-  50% { transform: translate(-20px, 30px) scale(0.95); }
-  75% { transform: translate(-30px, -30px) scale(1.02); }
-}
-
-.blob {
+.node {
   position: absolute;
-  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-  filter: blur(40px);
-  animation: blobFloat 15s ease-in-out infinite;
+  border-radius: 50%;
+  border: 1.5px solid;
+  animation: nodeFloat 8s ease-in-out infinite;
   pointer-events: none;
 }
 
-.blob-1 {
-  width: 300px;
-  height: 300px;
-  animation-delay: 0s;
+.node-connector {
+  position: absolute;
+  pointer-events: none;
 }
 
-.blob-2 {
-  width: 250px;
-  height: 250px;
-  animation-delay: 2s;
+/* Very subtle node pattern background */
+.nodes-bg {
+  position: relative;
+  overflow: hidden;
 }
 
-.blob-3 {
-  width: 200px;
-  height: 200px;
-  animation-delay: 4s;
+.nodes-bg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle, rgba(37, 99, 235, 0.04) 1px, transparent 1px),
+    radial-gradient(circle, rgba(245, 158, 11, 0.03) 1px, transparent 1px),
+    radial-gradient(circle, rgba(124, 58, 237, 0.04) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    160px 160px,
+    140px 140px;
+  background-position:
+    0 0,
+    40px 40px,
+    60px 20px;
+  pointer-events: none;
+  z-index: 0;
 }

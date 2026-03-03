@@ -30,33 +30,7 @@ function WhatsAppIcon({ size = 20 }: { size?: number }) {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden px-6 pt-24 pb-16 hero-gradient">
-      {/* Animated blobs */}
-      <div
-        className="blob blob-1"
-        style={{
-          top: "-100px",
-          left: "-150px",
-          background: "rgba(37, 99, 235, 0.12)",
-        }}
-      />
-      <div
-        className="blob blob-2"
-        style={{
-          top: "200px",
-          right: "-100px",
-          background: "rgba(245, 158, 11, 0.08)",
-        }}
-      />
-      <div
-        className="blob blob-3"
-        style={{
-          bottom: "-50px",
-          right: "100px",
-          background: "rgba(124, 58, 237, 0.06)",
-        }}
-      />
-
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-white px-6 pt-24 pb-16 nodes-bg">
       <div className="max-w-6xl mx-auto w-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: copy */}

@@ -10,12 +10,7 @@ const CALLOUTS = [
 
 export default function DashboardPreview() {
   return (
-    <section
-      className="relative py-24 md:py-32 px-6 overflow-hidden"
-      style={{
-        background: "linear-gradient(135deg, #1E1B4B 0%, #2E2A5A 50%, #1E1B4B 100%)",
-      }}
-    >
+    <section className="bg-bg-dark py-24 md:py-32 px-6 nodes-bg">
       <div className="max-w-6xl mx-auto">
         <motion.div
           variants={fadeInUp}
