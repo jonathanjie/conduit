@@ -39,7 +39,7 @@ export default function HowItWorks() {
             How Conduit works
           </h2>
           <p className="text-ink-light text-lg max-w-xl mx-auto">
-            9 parents. 3 teachers. Every message routed anonymously through a
+            Multiple classes. Multiple teachers. Every message routed anonymously through a
             single relay layer — neither side ever connected directly.
           </p>
         </motion.div>
