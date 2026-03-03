@@ -1,0 +1,391 @@
+# Sprint Status — Conduit / Math Mavens
+# Auto-updated by Scrum Master. Human-readable + machine-parseable.
+# Companion: sprint-plan-conduit-2026-03-03.md
+
+meta:
+  project: math-mavens-bot
+  platform: Conduit
+  customer: Math Mavens (@MathMavens_bot)
+  plan_doc: sprint-plan-conduit-2026-03-03.md
+  last_updated: "2026-03-03"
+  total_stories: 38
+  total_points: 146
+  team_velocity: 30
+  sprint_length_days: 14
+
+sprints:
+  - id: sprint-1
+    name: "Foundation + Core Relay"
+    goal: "Bot is deployable. Parent can relay messages to teacher end-to-end (single child, happy path)."
+    start_date: "2026-03-03"
+    end_date: "2026-03-14"
+    capacity: 30
+    allocated: 29
+    status: not_started  # not_started | in_progress | complete | cancelled
+    stories:
+      - id: S-01
+        title: "Monorepo scaffold and toolchain"
+        epic: E1
+        points: 3
+        status: not_started  # not_started | in_progress | done | blocked
+        blocked_by: []
+        notes: ""
+      - id: S-02
+        title: "Docker Compose dev environment"
+        epic: E1
+        points: 3
+        status: not_started
+        blocked_by: [S-01]
+        notes: ""
+      - id: S-03
+        title: "PostgreSQL schema + migrations"
+        epic: E1
+        points: 5
+        status: not_started
+        blocked_by: [S-02]
+        notes: "Includes pgcrypto setup and seed data script. Verify deterministic encrypt behavior for indexed lookup."
+      - id: S-04
+        title: "Redis setup and session adapter"
+        epic: E1
+        points: 2
+        status: not_started
+        blocked_by: [S-02]
+        notes: ""
+      - id: S-05
+        title: "Nginx + TLS + webhook config"
+        epic: E1
+        points: 3
+        status: not_started
+        blocked_by: [S-02]
+        notes: "Self-signed cert for dev; Certbot for production."
+      - id: S-06
+        title: "grammY bot bootstrap + webhook handler"
+        epic: E2
+        points: 3
+        status: not_started
+        blocked_by: [S-01, S-02, S-04]
+        notes: "Polling mode for dev; webhook for prod."
+      - id: S-07
+        title: "Router / Dispatcher"
+        epic: E2
+        points: 5
+        status: not_started
+        blocked_by: [S-03, S-04, S-06]
+        notes: "Verify pgp_sym_encrypt determinism for indexed lookup. Fallback: SHA-256 hash column."
+      - id: S-08
+        title: "Message Relay (text + all media types)"
+        epic: E2
+        points: 5
+        status: not_started
+        blocked_by: [S-03, S-04, S-06, S-07]
+        notes: "Use copyMessage only. Store relay_ctx in Redis for teacher reply threading."
+
+  - id: sprint-2
+    name: "Onboarding + Admin Bot Commands"
+    goal: "Bot is operationally usable. Admin can onboard users, manage mappings, and send broadcasts via bot commands."
+    start_date: "2026-03-17"
+    end_date: "2026-03-28"
+    capacity: 30
+    allocated: 34
+    status: not_started
+    overflow_note: "S-19 (5pts) or S-11 (3pts) can defer to Sprint 3 day 1 if velocity is under 34."
+    stories:
+      - id: S-09
+        title: "Multi-child session selection"
+        epic: E2
+        points: 3
+        status: not_started
+        blocked_by: [S-07, S-08]
+        notes: "Validate session student_id is still active on each relay."
+      - id: S-10
+        title: "Teacher reply context (student name header)"
+        epic: E2
+        points: 2
+        status: not_started
+        blocked_by: [S-08]
+        notes: "Redis relay_ctx key: relay_ctx:{teacherChatId}:{headerMsgId} TTL 8h."
+      - id: S-11
+        title: "Media group batching"
+        epic: E2
+        points: 3
+        status: not_started
+        blocked_by: [S-08]
+        notes: "500ms buffer window. Can defer to Sprint 3 if Sprint 2 is over capacity."
+      - id: S-12
+        title: "Rate limiter (Redis sliding window)"
+        epic: E2
+        points: 3
+        status: not_started
+        blocked_by: [S-04, S-08]
+        notes: "Lua script for atomic INCR+check. Per-chat + global limits."
+      - id: S-13
+        title: "Onboarding flow — deep-link + PDPA consent"
+        epic: E2
+        points: 8
+        status: not_started
+        blocked_by: [S-03, S-04, S-06, S-07, S-14]
+        notes: "grammY conversations plugin. Transaction wraps consent + user insert + mapping insert + token mark."
+      - id: S-14
+        title: "Token / Invite Manager"
+        epic: E2
+        points: 3
+        status: not_started
+        blocked_by: [S-03]
+        notes: "crypto.randomBytes(24).toString('base64url'). 72h expiry."
+      - id: S-15
+        title: "Admin bot commands — mapping management"
+        epic: E3
+        points: 5
+        status: not_started
+        blocked_by: [S-03, S-06, S-07, S-14]
+        notes: "Authorization middleware: role IN (admin, superadmin). Confirmation step for destructive ops."
+      - id: S-16
+        title: "Admin bot commands — token generation"
+        epic: E3
+        points: 2
+        status: not_started
+        blocked_by: [S-14, S-15]
+        notes: ""
+      - id: S-17
+        title: "Admin bot commands — broadcast dispatch"
+        epic: E3
+        points: 3
+        status: not_started
+        blocked_by: [S-12, S-15, S-19]
+        notes: "Depends on S-19 broadcast queue. Confirmation step required."
+      - id: S-18
+        title: "Superadmin bot commands — user lifecycle"
+        epic: E3
+        points: 3
+        status: not_started
+        blocked_by: [S-15]
+        notes: "requireSuperadmin guard. /deactivate /reactivate /promote /demote /audit /system_status."
+      - id: S-19
+        title: "Broadcast Queue (BullMQ + throttle)"
+        epic: E2
+        points: 5
+        status: not_started
+        blocked_by: [S-04, S-12]
+        notes: "BullMQ concurrency=25. Retry x3 with exponential backoff. Can split: enqueue in Sprint 2, worker in Sprint 3."
+
+  - id: sprint-3
+    name: "Dashboard Backend (REST API)"
+    goal: "Complete authenticated REST API. All admin and superadmin operations available via HTTP."
+    start_date: "2026-03-31"
+    end_date: "2026-04-11"
+    capacity: 30
+    allocated: 28
+    status: not_started
+    overflow_note: "2pt slack absorbs S-19 overflow from Sprint 2 or S-11 if deferred."
+    stories:
+      - id: S-20
+        title: "Audit Logger"
+        epic: E2
+        points: 3
+        status: not_started
+        blocked_by: [S-03]
+        notes: "Fire-and-forget via setImmediate. No message content fields in TypeScript types."
+      - id: S-21
+        title: "Web Auth Service (login, logout, session)"
+        epic: E4
+        points: 5
+        status: not_started
+        blocked_by: [S-03, S-04]
+        notes: "bcrypt cost 12. httpOnly SameSite=Strict cookies. Account lockout after 5 failures."
+      - id: S-22
+        title: "REST API — students CRUD"
+        epic: E4
+        points: 3
+        status: not_started
+        blocked_by: [S-21, S-03]
+        notes: "Paginated. DELETE is superadmin only."
+      - id: S-23
+        title: "REST API — mappings CRUD"
+        epic: E4
+        points: 3
+        status: not_started
+        blocked_by: [S-21, S-22]
+        notes: "409 on duplicate active teacher per student. Reassign in transaction."
+      - id: S-24
+        title: "REST API — tokens CRUD + deep-link gen"
+        epic: E4
+        points: 3
+        status: not_started
+        blocked_by: [S-14, S-21]
+        notes: "Status computed field: pending/used/expired."
+      - id: S-25
+        title: "REST API — broadcast endpoint"
+        epic: E4
+        points: 3
+        status: not_started
+        blocked_by: [S-19, S-21]
+        notes: "Poll-able status endpoint for in-progress broadcasts."
+      - id: S-26
+        title: "REST API — users management (superadmin)"
+        epic: E4
+        points: 3
+        status: not_started
+        blocked_by: [S-21]
+        notes: "requireSuperadmin. Telegram users + dashboard users endpoints."
+      - id: S-27
+        title: "REST API — audit log endpoint (superadmin)"
+        epic: E4
+        points: 2
+        status: not_started
+        blocked_by: [S-20, S-21]
+        notes: "Date range filter. Uses idx_audit_created index."
+      - id: S-28
+        title: "REST API — system status endpoint"
+        epic: E4
+        points: 2
+        status: not_started
+        blocked_by: [S-21]
+        notes: "30s in-memory cache. DB + Redis + bot health."
+      - id: S-29
+        title: "Phase 2/3 stubs (AI Gateway, Payment GW)"
+        epic: E4
+        points: 1
+        status: not_started
+        blocked_by: [S-06]
+        notes: "No-op implementations. No external SDKs installed."
+
+  - id: sprint-4
+    name: "Dashboard Frontend"
+    goal: "Admin dashboard fully usable in browser. Superadmin has access to all governance pages."
+    start_date: "2026-04-14"
+    end_date: "2026-04-25"
+    capacity: 30
+    allocated: 26
+    status: not_started
+    overflow_note: "4pt slack for UX polish and integration surprises."
+    stories:
+      - id: S-30
+        title: "Dashboard scaffold + routing + auth shell"
+        epic: E5
+        points: 3
+        status: not_started
+        blocked_by: [S-21]
+        notes: "Vite+React+TS. Tailwind with Conduit tokens. shadcn/ui. TanStack Query. AuthContext."
+      - id: S-31
+        title: "Dashboard login page"
+        epic: E5
+        points: 2
+        status: not_started
+        blocked_by: [S-30, S-21]
+        notes: "react-hook-form + Zod. Lockout display on 429."
+      - id: S-32
+        title: "Dashboard home / stats page"
+        epic: E5
+        points: 3
+        status: not_started
+        blocked_by: [S-30, S-28]
+        notes: "4 stat cards. System health indicator. 60s auto-refresh."
+      - id: S-33
+        title: "Students, mappings, and tokens pages"
+        epic: E5
+        points: 8
+        status: not_started
+        blocked_by: [S-30, S-22, S-23, S-24]
+        notes: "3 separate pages. Clipboard API for token copy. Optimistic updates."
+      - id: S-34
+        title: "Broadcast composer page"
+        epic: E5
+        points: 5
+        status: not_started
+        blocked_by: [S-30, S-25]
+        notes: "4096 char limit. Live delivery polling for in-progress broadcasts."
+      - id: S-35
+        title: "Superadmin pages (users, audit, system)"
+        epic: E5
+        points: 5
+        status: not_started
+        blocked_by: [S-30, S-26, S-27, S-28]
+        notes: "SuperadminRoute guard on all 3 pages."
+
+  - id: sprint-5
+    name: "Landing Page + QA + Hardening"
+    goal: "Ship-ready. Landing page live. E2E tests passing. Security and PDPA audit complete."
+    start_date: "2026-04-28"
+    end_date: "2026-05-09"
+    capacity: 30
+    allocated: 18
+    status: not_started
+    overflow_note: "12pt reserved for bug fixes from E2E testing and QA polish."
+    stories:
+      - id: S-36
+        title: "Landing page"
+        epic: E6
+        points: 5
+        status: not_started
+        blocked_by: [S-30]
+        notes: "Lighthouse accessibility >90. Formspree for demo CTA. Conduit brand tokens."
+      - id: S-37
+        title: "E2E tests (Playwright — critical relay paths)"
+        epic: E7
+        points: 5
+        status: not_started
+        blocked_by: [S-08, S-13, S-21]
+        notes: "5 scenarios. Separate test DB. GitHub Actions CI. Target: <3 min suite."
+      - id: S-38
+        title: "Security review + PDPA audit + hardening"
+        epic: E7
+        points: 8
+        status: not_started
+        blocked_by: []  # runs against completed system
+        notes: "Security checklist, PDPA audit, GDPR erase endpoint, Docker hardening, UptimeRobot, DB backup."
+
+epics:
+  - id: E1
+    title: "Infrastructure & Foundation"
+    stories: [S-01, S-02, S-03, S-04, S-05]
+    total_points: 16
+    primary_sprint: sprint-1
+
+  - id: E2
+    title: "Core Routing Engine"
+    stories: [S-06, S-07, S-08, S-09, S-10, S-11, S-12, S-13, S-14, S-19, S-20]
+    total_points: 43
+    primary_sprint: sprint-1  # continues through sprint-2
+
+  - id: E3
+    title: "Admin/Superadmin Bot Commands"
+    stories: [S-15, S-16, S-17, S-18]
+    total_points: 13
+    primary_sprint: sprint-2
+
+  - id: E4
+    title: "Dashboard Backend (REST API)"
+    stories: [S-21, S-22, S-23, S-24, S-25, S-26, S-27, S-28, S-29]
+    total_points: 25
+    primary_sprint: sprint-3
+
+  - id: E5
+    title: "Dashboard Frontend"
+    stories: [S-30, S-31, S-32, S-33, S-34, S-35]
+    total_points: 26
+    primary_sprint: sprint-4
+
+  - id: E6
+    title: "Landing Page"
+    stories: [S-36]
+    total_points: 5
+    primary_sprint: sprint-5
+
+  - id: E7
+    title: "QA & Hardening"
+    stories: [S-37, S-38]
+    total_points: 13
+    primary_sprint: sprint-5
+
+summary:
+  total_stories: 38
+  total_points: 141
+  points_by_sprint:
+    sprint-1: 29
+    sprint-2: 34  # with S-11 and S-19 overflow plan
+    sprint-3: 28
+    sprint-4: 26
+    sprint-5: 18
+  reserved_buffer_points: 16  # 4pt S2 slack absorbed, 4pt S4 slack, 12pt S5 buffer
+  target_ship_date: "2026-05-09"
+  current_sprint: sprint-1

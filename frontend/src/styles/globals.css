@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Conduit brand colors */
+  --color-primary: #24487f;
+  --color-primary-600: #2c5ba0;
+  --color-primary-50: #eef3fa;
+  --color-accent: #e07a00;
+  --color-success: #15803d;
+  --color-error: #b91c1c;
+  --color-warning: #b45309;
+  --color-text: #1e2433;
+
+  /* Spacing */
+  --sidebar-width: 256px;
+  --topbar-height: 64px;
+}
+
+@layer base {
+  html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--color-text);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #f8fafc;
+  }
+}
+
+@layer components {
+  .conduit-sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, #24487f 0%, #1b365f 100%);
+  }
+
+  .conduit-topbar {
+    height: var(--topbar-height);
+  }
+
+  .page-content {
+    min-height: calc(100vh - var(--topbar-height));
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+}
