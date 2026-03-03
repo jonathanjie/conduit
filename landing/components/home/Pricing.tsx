@@ -3,11 +3,13 @@ import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer, staggerItem } from "@/lib/animations";
 import Button from "@/components/ui/Button";
 import { PRICING_TIERS, DEMO_URL } from "@/lib/content";
+import NodesBg from "@/components/NodesBg";
 
 export default function Pricing() {
   return (
-    <section id="pricing" className="bg-cream py-24 md:py-32 px-6 nodes-bg">
-      <div className="max-w-6xl mx-auto">
+    <section id="pricing" className="relative bg-cream py-24 md:py-32 px-6 overflow-hidden">
+      <NodesBg />
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           variants={fadeInUp}
           initial="hidden"

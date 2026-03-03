@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/animations";
 import RelayDiagram from "@/components/RelayDiagram";
+import NodesBg from "@/components/NodesBg";
 
 const STEPS = [
   {
@@ -23,8 +24,9 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-bg-alt py-24 md:py-32 px-6 nodes-bg">
-      <div className="max-w-6xl mx-auto">
+    <section id="how-it-works" className="relative bg-bg-alt py-24 md:py-32 px-6 overflow-hidden">
+      <NodesBg />
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           variants={fadeInUp}
           initial="hidden"

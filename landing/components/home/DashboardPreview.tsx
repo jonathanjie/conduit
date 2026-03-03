@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer, staggerItem } from "@/lib/animations";
+import NodesBg from "@/components/NodesBg";
 
 const CALLOUTS = [
   { label: "Active Students", value: "143", delta: "+12 this month" },
@@ -10,8 +11,9 @@ const CALLOUTS = [
 
 export default function DashboardPreview() {
   return (
-    <section className="bg-bg-dark py-24 md:py-32 px-6 nodes-bg">
-      <div className="max-w-6xl mx-auto">
+    <section className="relative bg-bg-dark py-24 md:py-32 px-6 overflow-hidden">
+      <NodesBg variant="dark" />
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           variants={fadeInUp}
           initial="hidden"

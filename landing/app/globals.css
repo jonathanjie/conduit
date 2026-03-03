@@ -82,50 +82,16 @@ h1, h2, h3, h4 {
 .animate-float { animation: floatY 4s ease-in-out infinite; }
 .animate-float-slow { animation: floatY 6s ease-in-out 1s infinite; }
 
-/* Subtle animated nodes for backgrounds */
-@keyframes nodeFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+/* Floating node animation */
+@keyframes nodeFloat1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(8px, -14px); }
 }
-
-.node {
-  position: absolute;
-  border-radius: 50%;
-  border: 1.5px solid;
-  animation: nodeFloat 8s ease-in-out infinite;
-  pointer-events: none;
+@keyframes nodeFloat2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-10px, 10px); }
 }
-
-.node-connector {
-  position: absolute;
-  pointer-events: none;
-}
-
-/* Very subtle node pattern background */
-.nodes-bg {
-  position: relative;
-  overflow: hidden;
-}
-
-.nodes-bg::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    radial-gradient(circle, rgba(37, 99, 235, 0.04) 1px, transparent 1px),
-    radial-gradient(circle, rgba(245, 158, 11, 0.03) 1px, transparent 1px),
-    radial-gradient(circle, rgba(124, 58, 237, 0.04) 1px, transparent 1px);
-  background-size:
-    120px 120px,
-    160px 160px,
-    140px 140px;
-  background-position:
-    0 0,
-    40px 40px,
-    60px 20px;
-  pointer-events: none;
-  z-index: 0;
+@keyframes nodeFloat3 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(12px, 6px); }
 }

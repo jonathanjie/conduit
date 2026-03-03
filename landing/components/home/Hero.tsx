@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import Button from "@/components/ui/Button";
 import { DEMO_URL } from "@/lib/content";
+import NodesBg from "@/components/NodesBg";
 
 function TelegramIcon({ size = 20 }: { size?: number }) {
   return (
@@ -30,7 +31,8 @@ function WhatsAppIcon({ size = 20 }: { size?: number }) {
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-white px-6 pt-24 pb-16 nodes-bg">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-white px-6 pt-24 pb-16">
+      <NodesBg />
       <div className="max-w-6xl mx-auto w-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: copy */}

@@ -3,10 +3,12 @@ import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import Button from "@/components/ui/Button";
 import { DEMO_URL } from "@/lib/content";
+import NodesBg from "@/components/NodesBg";
 
 export default function FinalCTA() {
   return (
-    <section className="bg-bg-dark py-24 md:py-32 px-6 relative overflow-hidden nodes-bg">
+    <section className="bg-bg-dark py-24 md:py-32 px-6 relative overflow-hidden">
+      <NodesBg variant="dark" />
       {/* Subtle warm glow */}
       <div
         className="absolute top-0 right-0 w-[600px] h-[400px] pointer-events-none"

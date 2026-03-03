@@ -3,11 +3,13 @@ import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import Card from "@/components/ui/Card";
 import { PROBLEM_CARDS } from "@/lib/content";
+import NodesBg from "@/components/NodesBg";
 
 export default function Problem() {
   return (
-    <section id="problem" className="bg-cream py-24 md:py-32 px-6 nodes-bg">
-      <div className="max-w-6xl mx-auto">
+    <section id="problem" className="relative bg-cream py-24 md:py-32 px-6 overflow-hidden">
+      <NodesBg />
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           variants={fadeInUp}
           initial="hidden"

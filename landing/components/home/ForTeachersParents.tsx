@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { fadeInUp, slideInLeft, slideInRight } from "@/lib/animations";
 import { TEACHER_BENEFITS, PARENT_BENEFITS } from "@/lib/content";
+import NodesBg from "@/components/NodesBg";
 
 function BenefitList({
   items,
@@ -29,8 +30,9 @@ function BenefitList({
 
 export default function ForTeachersParents() {
   return (
-    <section className="bg-bg-warm py-24 md:py-32 px-6 nodes-bg">
-      <div className="max-w-6xl mx-auto">
+    <section className="relative bg-bg-warm py-24 md:py-32 px-6 overflow-hidden">
+      <NodesBg />
+      <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
           variants={fadeInUp}
           initial="hidden"

@@ -4,7 +4,7 @@ import { fadeIn } from "@/lib/animations";
 
 export default function SocialProof() {
   return (
-    <section className="bg-bg-alt py-8 border-y border-border nodes-bg">
+    <section className="bg-bg-alt py-8 border-y border-border">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           variants={fadeIn}

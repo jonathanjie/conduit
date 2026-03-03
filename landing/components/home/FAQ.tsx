@@ -3,13 +3,15 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeInUp } from "@/lib/animations";
 import { FAQ_ITEMS } from "@/lib/content";
+import NodesBg from "@/components/NodesBg";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="bg-cream-warm py-24 md:py-32 px-6 nodes-bg">
-      <div className="max-w-3xl mx-auto">
+    <section id="faq" className="relative bg-cream-warm py-24 md:py-32 px-6 overflow-hidden">
+      <NodesBg />
+      <div className="max-w-3xl mx-auto relative z-10">
         <motion.div
           variants={fadeInUp}
           initial="hidden"
