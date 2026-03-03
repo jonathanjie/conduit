@@ -2,23 +2,21 @@
 import { motion } from "framer-motion";
 import { staggerContainer, staggerItem } from "@/lib/animations";
 import Button from "@/components/ui/Button";
-import NetworkGraph from "@/components/NetworkGraph";
+import ForceGraph from "@/components/ForceGraph";
 import { DEMO_URL } from "@/lib/content";
 
 export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-white px-6 pt-24 pb-16">
-      {/* Background network graph — subtle, pointer-events-none */}
-      <div className="absolute inset-0 pointer-events-none">
-        <NetworkGraph variant="background" className="w-full h-full" />
-      </div>
+      {/* Organic force graph — absolute behind all content */}
+      <ForceGraph className="absolute inset-0 w-full h-full" />
 
-      {/* Fade overlay so text stays readable */}
+      {/* Soft left-side fade so hero text stays crisp */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 60% 80% at 30% 50%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.70) 60%, rgba(255,255,255,0.30) 100%)",
+            "linear-gradient(to right, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.80) 30%, rgba(255,255,255,0.25) 60%, rgba(255,255,255,0) 100%)",
         }}
       />
 
