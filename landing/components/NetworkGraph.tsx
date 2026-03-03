@@ -1,60 +1,71 @@
 "use client";
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-// ── Layout (normalised 0-1) ──────────────────────────────────────────────────
+// ── Layout (normalised 0–1) ────────────────────────────────────────────────
+// Parents in 3 clusters of 3, gently scattered on the left arc
 const PARENT_NODES = [
-  { x: 0.12, y: 0.10 },
-  { x: 0.12, y: 0.22 },
-  { x: 0.12, y: 0.34 },
-  { x: 0.12, y: 0.46 },
-  { x: 0.12, y: 0.58 },
-  { x: 0.12, y: 0.70 },
-  { x: 0.12, y: 0.82 },
-  { x: 0.12, y: 0.90 },
-  { x: 0.12, y: 0.98 },
+  { x: 0.11, y: 0.11, group: 0 }, // cluster 0  → teacher 0
+  { x: 0.14, y: 0.21, group: 0 },
+  { x: 0.11, y: 0.31, group: 0 },
+  { x: 0.13, y: 0.44, group: 1 }, // cluster 1  → teacher 1
+  { x: 0.09, y: 0.54, group: 1 },
+  { x: 0.13, y: 0.64, group: 1 },
+  { x: 0.11, y: 0.73, group: 2 }, // cluster 2  → teacher 2
+  { x: 0.14, y: 0.83, group: 2 },
+  { x: 0.11, y: 0.91, group: 2 },
 ];
 const TEACHER_NODES = [
-  { x: 0.88, y: 0.25 },
-  { x: 0.88, y: 0.50 },
-  { x: 0.88, y: 0.75 },
+  { x: 0.88, y: 0.22, group: 0 },
+  { x: 0.88, y: 0.50, group: 1 },
+  { x: 0.88, y: 0.78, group: 2 },
 ];
-const CONDUIT_NODE = { x: 0.50, y: 0.50 };
+const CONDUIT = { x: 0.50, y: 0.50 };
 
-// parent i belongs to teacher Math.floor(i / 3)
-const parentTeacher = (i: number) => Math.floor(i / 3);
+// ── Colours ────────────────────────────────────────────────────────────────
+const C = {
+  bg:         "#060B18",
+  parent:     "#F59E0B",
+  parentGlow: "#FBBF24",
+  teacher:    "#8B5CF6",
+  teacherGlow:"#A78BFA",
+  hub:        "#2563EB",
+  hubGlow:    "#60A5FA",
+  sigFwd:     "#FBBF24",  // parent → conduit
+  sigMid:     "#60A5FA",  // conduit → teacher
+  sigBack:    "#22D3EE",  // conduit → parent (reply)
+  sigBackT:   "#C084FC",  // teacher → conduit (reply)
+  edge:       "rgba(255,255,255,0.04)",
+  edgeActive: "rgba(255,255,255,0.18)",
+};
 
-// ── Sample messages ──────────────────────────────────────────────────────────
-const PARENT_MSGS = [
-  "Emma struggled with integration today",
+// ── Messages ───────────────────────────────────────────────────────────────
+const P_MSGS = [
+  "Emma's struggling with integration 😅",
   "Can we move Saturday's class?",
-  "Thank you so much! 🙏",
+  "Marcus scored 87 — so happy! 🙏",
   "Is there homework this week?",
   "When are mock exams?",
-  "Marcus scored 87 — he's so happy!",
   "Can I get last week's notes?",
-  "Aiden missed class, please advise",
-  "Is the fee due this Friday?",
+  "Aiden missed class — please advise",
 ];
-const TEACHER_MSGS = [
+const T_MSGS = [
   "Thursday 4pm works!",
   "Great progress this term 😊",
   "Please review Chapter 7 tonight",
-  "Assessment results sent via dashboard",
-  "Noted — will cover it next session",
+  "Results sent via dashboard",
   "See you Saturday! 📚",
 ];
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────────
 interface Signal {
   id: number;
   parentIdx: number;
-  phase: "p2c" | "c2t" | "c2p_reply" | "t2c_reply";
+  phase: "p2c" | "c2t" | "t2c" | "c2p";
   progress: number;
   speed: number;
-  isReply: boolean;
+  trail: Array<{ x: number; y: number }>;
 }
-
 interface Bubble {
   id: number;
   nodeType: "parent" | "teacher";
@@ -62,15 +73,80 @@ interface Bubble {
   message: string;
 }
 
-// ── Colours ──────────────────────────────────────────────────────────────────
-const COL_PARENT = "#F59E0B";   // amber
-const COL_CONDUIT = "#2563EB";  // primary blue
-const COL_TEACHER = "#7C3AED"; // purple
-const COL_EDGE = "rgba(37,99,235,0.12)";
-const COL_EDGE_REPLY = "rgba(124,58,237,0.10)";
-
 let _id = 0;
 const uid = () => ++_id;
+
+// Cubic bezier point
+function cubicBezier(
+  t: number,
+  p0: [number, number],
+  p1: [number, number],
+  p2: [number, number],
+  p3: [number, number]
+): [number, number] {
+  const mt = 1 - t;
+  return [
+    mt ** 3 * p0[0] + 3 * mt ** 2 * t * p1[0] + 3 * mt * t ** 2 * p2[0] + t ** 3 * p3[0],
+    mt ** 3 * p0[1] + 3 * mt ** 2 * t * p1[1] + 3 * mt * t ** 2 * p2[1] + t ** 3 * p3[1],
+  ];
+}
+
+// Precompute bezier control points (normalised)
+function parentToConduitCPs(pn: { x: number; y: number }) {
+  const cx = CONDUIT.x, cy = CONDUIT.y;
+  return {
+    p0: [pn.x, pn.y] as [number, number],
+    p1: [pn.x + 0.22, pn.y] as [number, number],
+    p2: [cx - 0.14, cy] as [number, number],
+    p3: [cx, cy] as [number, number],
+  };
+}
+function conduitToTeacherCPs(tn: { x: number; y: number }) {
+  const cx = CONDUIT.x, cy = CONDUIT.y;
+  return {
+    p0: [cx, cy] as [number, number],
+    p1: [cx + 0.14, cy] as [number, number],
+    p2: [tn.x - 0.22, tn.y] as [number, number],
+    p3: [tn.x, tn.y] as [number, number],
+  };
+}
+
+// ── Draw helpers ────────────────────────────────────────────────────────────
+function drawGlowCircle(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number,
+  r: number, color: string, glowColor: string, glowSize: number, alpha: number
+) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.shadowBlur = glowSize;
+  ctx.shadowColor = glowColor;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawBezierEdge(
+  ctx: CanvasRenderingContext2D,
+  p0: [number,number], p1: [number,number], p2: [number,number], p3: [number,number],
+  W: number, H: number, color: string, alpha: number, lineWidth = 1
+) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = lineWidth;
+  ctx.beginPath();
+  ctx.moveTo(p0[0] * W, p0[1] * H);
+  ctx.bezierCurveTo(
+    p1[0] * W, p1[1] * H,
+    p2[0] * W, p2[1] * H,
+    p3[0] * W, p3[1] * H
+  );
+  ctx.stroke();
+  ctx.restore();
+}
 
 export default function NetworkGraph({
   variant = "full",
@@ -79,361 +155,369 @@ export default function NetworkGraph({
   variant?: "full" | "background";
   className?: string;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef  = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const signalsRef = useRef<Signal[]>([]);
-  const rafRef = useRef<number>(0);
+  const signalsRef   = useRef<Signal[]>([]);
+  const rafRef       = useRef<number>(0);
   const lastSpawnRef = useRef<number>(0);
-  const lastBubbleRef = useRef<number>(0);
+  const lastBubbleRef= useRef<number>(0);
+  const timeRef      = useRef<number>(0);
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const isFull = variant === "full";
 
-  // Convert normalised coords to canvas px
-  const toC = useCallback(
-    (nx: number, ny: number, w: number, h: number): [number, number] => [
-      nx * w,
-      ny * h,
-    ],
-    []
-  );
-
-  // Draw a glowing dot at canvas position
-  const drawSignal = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      color: string,
-      alpha: number
-    ) => {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.shadowBlur = 16;
-      ctx.shadowColor = color;
-      ctx.beginPath();
-      ctx.arc(x, y, isFull ? 4 : 3, 0, Math.PI * 2);
-      ctx.fillStyle = "#ffffff";
-      ctx.fill();
-      // Inner colour dot
-      ctx.shadowBlur = 6;
-      ctx.beginPath();
-      ctx.arc(x, y, isFull ? 2.5 : 2, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.restore();
-    },
-    [isFull]
-  );
-
-  // Draw a node circle
-  const drawNode = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      r: number,
-      fill: string,
-      alpha: number,
-      label?: string
-    ) => {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      // Glow
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = fill;
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = fill;
-      ctx.fill();
-      // Inner white ring
-      ctx.shadowBlur = 0;
-      ctx.beginPath();
-      ctx.arc(x, y, r * 0.5, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255,255,255,0.9)";
-      ctx.fill();
-      ctx.restore();
-
-      if (label && isFull) {
-        ctx.save();
-        ctx.globalAlpha = alpha * 0.8;
-        ctx.font = "500 11px Inter, sans-serif";
-        ctx.fillStyle = "#374151";
-        ctx.textAlign = "center";
-        ctx.fillText(label, x, y + r + 14);
-        ctx.restore();
-      }
-    },
-    [isFull]
-  );
-
-  // Draw Conduit centre node (rounded rect)
-  const drawConduit = useCallback(
-    (ctx: CanvasRenderingContext2D, x: number, y: number, alpha: number) => {
-      const w = isFull ? 90 : 60;
-      const h = isFull ? 36 : 24;
-      const r = 8;
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.shadowBlur = 20;
-      ctx.shadowColor = COL_CONDUIT;
-      ctx.beginPath();
-      ctx.roundRect(x - w / 2, y - h / 2, w, h, r);
-      ctx.fillStyle = COL_CONDUIT;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      if (isFull) {
-        ctx.font = "700 12px Inter, sans-serif";
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("Conduit", x, y);
-      }
-      ctx.restore();
-    },
-    [isFull]
-  );
-
-  // Main draw loop
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas    = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const dpr = Math.min(window.devicePixelRatio, 2);
-    let W = 0;
-    let H = 0;
+    let W = 0, H = 0;
 
     const resize = () => {
-      const rect = container.getBoundingClientRect();
-      W = rect.width;
-      H = rect.height;
-      canvas.width = W * dpr;
+      const r = container.getBoundingClientRect();
+      W = r.width; H = r.height;
+      canvas.width  = W * dpr;
       canvas.height = H * dpr;
-      canvas.style.width = `${W}px`;
+      canvas.style.width  = `${W}px`;
       canvas.style.height = `${H}px`;
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(container);
 
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-
-    const alpha = isFull ? 1 : 0.18;
+    // Precompute all bezier CPs for all parent and teacher edges
+    const parentCPs = PARENT_NODES.map(parentToConduitCPs);
+    const teacherCPs = TEACHER_NODES.map(conduitToTeacherCPs);
 
     const draw = (ts: number) => {
-      if (W === 0 || H === 0) {
-        rafRef.current = requestAnimationFrame(draw);
-        return;
-      }
+      if (W === 0 || H === 0) { rafRef.current = requestAnimationFrame(draw); return; }
+      const dt = ts - timeRef.current;
+      timeRef.current = ts;
 
       ctx.clearRect(0, 0, W, H);
 
-      const cx = CONDUIT_NODE.x * W;
-      const cy = CONDUIT_NODE.y * H;
+      // ── Background ──────────────────────────────────────────────────
+      if (isFull) {
+        ctx.fillStyle = C.bg;
+        ctx.fillRect(0, 0, W, H);
+        // Subtle radial glow at conduit centre
+        const grad = ctx.createRadialGradient(
+          CONDUIT.x * W, CONDUIT.y * H, 0,
+          CONDUIT.x * W, CONDUIT.y * H, W * 0.35
+        );
+        grad.addColorStop(0, "rgba(37,99,235,0.08)");
+        grad.addColorStop(1, "transparent");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
 
-      // ── Draw edges ──────────────────────────────────────────────────────
-      PARENT_NODES.forEach((p) => {
-        const [px, py] = toC(p.x, p.y, W, H);
-        ctx.save();
-        ctx.globalAlpha = alpha * 0.7;
-        ctx.strokeStyle = COL_EDGE;
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 6]);
-        ctx.beginPath();
-        ctx.moveTo(px, py);
-        ctx.lineTo(cx, cy);
-        ctx.stroke();
-        ctx.restore();
+      const baseAlpha = isFull ? 1 : 0.07;
+
+      // ── Draw edges (bezier) ──────────────────────────────────────────
+      PARENT_NODES.forEach((_, i) => {
+        const { p0, p1, p2, p3 } = parentCPs[i];
+        drawBezierEdge(ctx, p0, p1, p2, p3, W, H, C.edge, baseAlpha * 0.8);
+      });
+      TEACHER_NODES.forEach((_, i) => {
+        const { p0, p1, p2, p3 } = teacherCPs[i];
+        drawBezierEdge(ctx, p0, p1, p2, p3, W, H, C.edge, baseAlpha * 0.8);
       });
 
-      TEACHER_NODES.forEach((t) => {
-        const [tx, ty] = toC(t.x, t.y, W, H);
+      // ── Conduit hub (concentric rings) ───────────────────────────────
+      if (isFull) {
+        const hx = CONDUIT.x * W, hy = CONDUIT.y * H;
+        const t  = ts / 1000;
+
+        // Outermost ring — slow pulse
+        const outerAlpha = 0.12 + 0.06 * Math.sin(t * 0.7);
         ctx.save();
-        ctx.globalAlpha = alpha * 0.7;
-        ctx.strokeStyle = COL_EDGE_REPLY;
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 6]);
+        ctx.globalAlpha = outerAlpha;
+        ctx.strokeStyle = C.hubGlow;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.lineTo(tx, ty);
+        ctx.arc(hx, hy, 48, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
+
+        // Middle ring — slow rotate, dashed
+        ctx.save();
+        ctx.globalAlpha = 0.25;
+        ctx.strokeStyle = C.hubGlow;
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 8]);
+        ctx.lineDashOffset = -t * 18;
+        ctx.translate(hx, hy);
+        ctx.rotate(t * 0.3);
+        ctx.beginPath();
+        ctx.arc(0, 0, 34, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        // Inner ring — counter-rotate
+        ctx.save();
+        ctx.globalAlpha = 0.35;
+        ctx.strokeStyle = C.hub;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 6]);
+        ctx.lineDashOffset = t * 24;
+        ctx.translate(hx, hy);
+        ctx.rotate(-t * 0.5);
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        // Core filled circle
+        drawGlowCircle(ctx, hx, hy, 14, C.hub, C.hubGlow, 28, 1);
+        // White dot centre
+        ctx.save();
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath();
+        ctx.arc(hx, hy, 5, 0, Math.PI * 2);
+        ctx.fillStyle = "#fff";
+        ctx.fill();
+        ctx.restore();
+        // Label below
+        ctx.save();
+        ctx.globalAlpha = 0.7;
+        ctx.font = "600 11px Inter, sans-serif";
+        ctx.fillStyle = C.hubGlow;
+        ctx.textAlign = "center";
+        ctx.fillText("Conduit", hx, hy + 30);
+        ctx.restore();
+      } else {
+        // Background variant: just a faint circle
+        const hx = CONDUIT.x * W, hy = CONDUIT.y * H;
+        drawGlowCircle(ctx, hx, hy, 10, C.hub, C.hubGlow, 0, 0.06);
+      }
+
+      // ── Parent nodes ─────────────────────────────────────────────────
+      PARENT_NODES.forEach((p, i) => {
+        const px = p.x * W, py = p.y * H;
+        const phase = (ts / 2200 + i * 0.4) % (Math.PI * 2);
+        const pulseR = isFull ? 17 + Math.sin(phase) * 3 : 10;
+
+        if (isFull) {
+          // Outer pulse ring
+          ctx.save();
+          ctx.globalAlpha = 0.08 + 0.04 * Math.sin(phase);
+          ctx.beginPath();
+          ctx.arc(px, py, pulseR, 0, Math.PI * 2);
+          ctx.fillStyle = C.parent;
+          ctx.fill();
+          ctx.restore();
+          // Mid ring
+          drawGlowCircle(ctx, px, py, 10, C.parent + "44", C.parentGlow, 10, 0.5);
+          // Core
+          drawGlowCircle(ctx, px, py, 6,  C.parent, C.parentGlow, 14, 1);
+          // Label
+          ctx.save();
+          ctx.globalAlpha = 0.5;
+          ctx.font = "500 9px Inter, sans-serif";
+          ctx.fillStyle = "#94A3B8";
+          ctx.textAlign = "left";
+          ctx.fillText(`P${i + 1}`, px + 10, py + 3.5);
+          ctx.restore();
+        } else {
+          drawGlowCircle(ctx, px, py, 4, C.parent, C.parent, 0, 0.06);
+        }
       });
 
-      // ── Spawn new signals ─────────────────────────────────────────────
-      const spawnInterval = isFull ? 700 : 900;
-      if (ts - lastSpawnRef.current > spawnInterval && signalsRef.current.length < 18) {
+      // ── Teacher nodes ─────────────────────────────────────────────────
+      TEACHER_NODES.forEach((t, i) => {
+        const tx = t.x * W, ty = t.y * H;
+        const phase = (ts / 2800 + i * 0.8) % (Math.PI * 2);
+        const pulseR = isFull ? 20 + Math.sin(phase) * 3 : 12;
+
+        if (isFull) {
+          ctx.save();
+          ctx.globalAlpha = 0.07 + 0.04 * Math.sin(phase);
+          ctx.beginPath();
+          ctx.arc(tx, ty, pulseR, 0, Math.PI * 2);
+          ctx.fillStyle = C.teacher;
+          ctx.fill();
+          ctx.restore();
+          drawGlowCircle(ctx, tx, ty, 12, C.teacher + "55", C.teacherGlow, 12, 0.5);
+          drawGlowCircle(ctx, tx, ty, 7,  C.teacher,       C.teacherGlow, 18, 1);
+          ctx.save();
+          ctx.globalAlpha = 0.5;
+          ctx.font = "500 9px Inter, sans-serif";
+          ctx.fillStyle = "#94A3B8";
+          ctx.textAlign = "right";
+          ctx.fillText(`T${i + 1}`, tx - 12, ty + 3.5);
+          ctx.restore();
+        } else {
+          drawGlowCircle(ctx, tx, ty, 5, C.teacher, C.teacher, 0, 0.07);
+        }
+      });
+
+      // ── Spawn signals ─────────────────────────────────────────────────
+      const spawnMs = isFull ? 650 : 1100;
+      if (ts - lastSpawnRef.current > spawnMs && signalsRef.current.length < 20) {
         lastSpawnRef.current = ts;
         const parentIdx = Math.floor(Math.random() * 9);
-        const isReply = Math.random() < 0.3;
+        const isReply = Math.random() < 0.28;
         signalsRef.current.push({
           id: uid(),
           parentIdx,
-          phase: isReply ? "t2c_reply" : "p2c",
+          phase: isReply ? "t2c" : "p2c",
           progress: 0,
-          speed: 0.004 + Math.random() * 0.003,
-          isReply,
+          speed: 0.0035 + Math.random() * 0.0025,
+          trail: [],
         });
       }
 
-      // ── Spawn message bubbles (full variant) ───────────────────────────
-      if (isFull && ts - lastBubbleRef.current > 2500) {
+      // ── Spawn bubbles ─────────────────────────────────────────────────
+      if (isFull && ts - lastBubbleRef.current > 2800) {
         lastBubbleRef.current = ts;
-        const isParent = Math.random() > 0.4;
-        const newBubble: Bubble = {
+        const isParent = Math.random() > 0.35;
+        const b: Bubble = {
           id: uid(),
           nodeType: isParent ? "parent" : "teacher",
           nodeIdx: isParent
             ? Math.floor(Math.random() * 9)
             : Math.floor(Math.random() * 3),
           message: isParent
-            ? PARENT_MSGS[Math.floor(Math.random() * PARENT_MSGS.length)]
-            : TEACHER_MSGS[Math.floor(Math.random() * TEACHER_MSGS.length)],
+            ? P_MSGS[Math.floor(Math.random() * P_MSGS.length)]
+            : T_MSGS[Math.floor(Math.random() * T_MSGS.length)],
         };
-        setBubbles((prev) => {
-          // max 2 bubbles at a time
-          const next = [...prev.slice(-1), newBubble];
-          return next;
-        });
-        setTimeout(
-          () =>
-            setBubbles((prev) => prev.filter((b) => b.id !== newBubble.id)),
-          3200
-        );
+        setBubbles(prev => [...prev.slice(-1), b]);
+        setTimeout(() => setBubbles(prev => prev.filter(x => x.id !== b.id)), 3400);
       }
 
-      // ── Update & draw signals ──────────────────────────────────────────
-      signalsRef.current = signalsRef.current.filter((sig) => {
+      // ── Update & draw signals ─────────────────────────────────────────
+      signalsRef.current = signalsRef.current.filter(sig => {
         sig.progress += sig.speed;
+
         if (sig.progress >= 1) {
           // Phase transition
-          if (sig.phase === "p2c") {
-            sig.phase = "c2t";
-            sig.progress = 0;
-            return true;
-          } else if (sig.phase === "t2c_reply") {
-            sig.phase = "c2p_reply";
-            sig.progress = 0;
-            return true;
-          }
+          if (sig.phase === "p2c") { sig.phase = "c2t"; sig.progress = 0; sig.trail = []; return true; }
+          if (sig.phase === "t2c") { sig.phase = "c2p"; sig.progress = 0; sig.trail = []; return true; }
           return false; // done
         }
 
-        const p = PARENT_NODES[sig.parentIdx];
-        const t = TEACHER_NODES[parentTeacher(sig.parentIdx)];
-        const [px, py] = toC(p.x, p.y, W, H);
-        const [tx, ty] = toC(t.x, t.y, W, H);
-
-        let x: number, y: number, color: string;
+        const pn = PARENT_NODES[sig.parentIdx];
+        const tn = TEACHER_NODES[pn.group];
+        let pos: [number, number];
+        let color: string;
 
         if (sig.phase === "p2c") {
-          x = lerp(px, cx, sig.progress);
-          y = lerp(py, cy, sig.progress);
-          color = COL_PARENT;
+          const { p0, p1, p2, p3 } = parentCPs[sig.parentIdx];
+          const np = cubicBezier(sig.progress, p0, p1, p2, p3);
+          pos = [np[0] * W, np[1] * H];
+          color = C.sigFwd;
         } else if (sig.phase === "c2t") {
-          x = lerp(cx, tx, sig.progress);
-          y = lerp(cy, ty, sig.progress);
-          color = COL_CONDUIT;
-        } else if (sig.phase === "t2c_reply") {
-          x = lerp(tx, cx, sig.progress);
-          y = lerp(ty, cy, sig.progress);
-          color = COL_TEACHER;
+          const { p0, p1, p2, p3 } = teacherCPs[tn.group];
+          const np = cubicBezier(sig.progress, p0, p1, p2, p3);
+          pos = [np[0] * W, np[1] * H];
+          color = C.sigMid;
+        } else if (sig.phase === "t2c") {
+          const { p0, p1, p2, p3 } = teacherCPs[tn.group];
+          const np = cubicBezier(1 - sig.progress, p0, p1, p2, p3);
+          pos = [np[0] * W, np[1] * H];
+          color = C.sigBackT;
         } else {
-          // c2p_reply
-          x = lerp(cx, px, sig.progress);
-          y = lerp(cy, py, sig.progress);
-          color = COL_CONDUIT;
+          // c2p
+          const { p0, p1, p2, p3 } = parentCPs[sig.parentIdx];
+          const np = cubicBezier(1 - sig.progress, p0, p1, p2, p3);
+          pos = [np[0] * W, np[1] * H];
+          color = C.sigBack;
         }
 
-        drawSignal(ctx, x, y, color, alpha);
+        // Update trail
+        sig.trail.push({ x: pos[0], y: pos[1] });
+        if (sig.trail.length > 7) sig.trail.shift();
+
+        // Draw trail
+        if (sig.trail.length > 1) {
+          for (let k = 0; k < sig.trail.length - 1; k++) {
+            const a = (k / sig.trail.length) * (isFull ? 0.5 : 0.3);
+            ctx.save();
+            ctx.globalAlpha = a;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = isFull ? 2.5 : 1.5;
+            ctx.lineCap = "round";
+            ctx.shadowBlur = isFull ? 8 : 0;
+            ctx.shadowColor = color;
+            ctx.beginPath();
+            ctx.moveTo(sig.trail[k].x, sig.trail[k].y);
+            ctx.lineTo(sig.trail[k + 1].x, sig.trail[k + 1].y);
+            ctx.stroke();
+            ctx.restore();
+          }
+        }
+
+        // Signal head
+        const alpha = isFull ? 1 : 0.25;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.shadowBlur = isFull ? 22 : 0;
+        ctx.shadowColor = color;
+        ctx.beginPath();
+        ctx.arc(pos[0], pos[1], isFull ? 4.5 : 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
+        ctx.fill();
+        ctx.shadowBlur = isFull ? 8 : 0;
+        ctx.beginPath();
+        ctx.arc(pos[0], pos[1], isFull ? 2.5 : 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.restore();
+
         return true;
       });
-
-      // ── Draw nodes ────────────────────────────────────────────────────
-      PARENT_NODES.forEach((p, i) => {
-        const [px, py] = toC(p.x, p.y, W, H);
-        drawNode(
-          ctx,
-          px,
-          py,
-          isFull ? 9 : 6,
-          COL_PARENT,
-          alpha,
-          isFull ? `P${i + 1}` : undefined
-        );
-      });
-
-      TEACHER_NODES.forEach((t, i) => {
-        const [tx, ty] = toC(t.x, t.y, W, H);
-        drawNode(
-          ctx,
-          tx,
-          ty,
-          isFull ? 11 : 7,
-          COL_TEACHER,
-          alpha,
-          isFull ? `T${i + 1}` : undefined
-        );
-      });
-
-      drawConduit(ctx, cx, cy, alpha);
 
       rafRef.current = requestAnimationFrame(draw);
     };
 
     rafRef.current = requestAnimationFrame(draw);
+    return () => { cancelAnimationFrame(rafRef.current); ro.disconnect(); };
+  }, [isFull]);
 
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-      ro.disconnect();
-    };
-  }, [isFull, toC, drawNode, drawSignal, drawConduit]);
-
-  // Compute bubble screen position
-  const getBubblePos = (b: Bubble, containerEl: HTMLDivElement | null) => {
-    if (!containerEl) return { top: 0, left: 0 };
-    const rect = containerEl.getBoundingClientRect();
-    const W = rect.width;
-    const H = rect.height;
+  // Bubble screen position
+  const getBubblePos = (b: Bubble) => {
+    if (!containerRef.current) return { top: 0, left: 0 };
+    const { width: W, height: H } = containerRef.current.getBoundingClientRect();
     if (b.nodeType === "parent") {
       const p = PARENT_NODES[b.nodeIdx];
-      return { top: p.y * H, left: p.x * W + 22 };
-    } else {
-      const t = TEACHER_NODES[b.nodeIdx];
-      return { top: t.y * H, left: t.x * W - 220 };
+      return { top: p.y * H - 20, left: p.x * W + 22 };
     }
+    const t = TEACHER_NODES[b.nodeIdx];
+    return { top: t.y * H - 20, left: t.x * W - 210 };
   };
 
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className}`}>
       <canvas ref={canvasRef} className="absolute inset-0" />
 
-      {/* Message bubbles */}
       {isFull && (
         <AnimatePresence>
-          {bubbles.map((b) => {
-            const pos = getBubblePos(b, containerRef.current);
+          {bubbles.map(b => {
+            const pos = getBubblePos(b);
             return (
               <motion.div
                 key={b.id}
-                initial={{ opacity: 0, scale: 0.85, y: 6 }}
+                initial={{ opacity: 0, scale: 0.88, y: 8 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.85, y: -6 }}
-                transition={{ duration: 0.25 }}
+                exit={{ opacity: 0, scale: 0.88, y: -8 }}
+                transition={{ duration: 0.22 }}
                 className="absolute z-10 pointer-events-none"
-                style={{ top: pos.top - 18, left: pos.left }}
+                style={{ top: pos.top, left: pos.left }}
               >
                 <div
-                  className={`px-3 py-2 rounded-xl text-xs font-medium shadow-md max-w-[190px] leading-snug border ${
+                  className={`px-3 py-2 rounded-xl text-xs font-medium max-w-[200px] leading-snug border ${
                     b.nodeType === "parent"
-                      ? "bg-amber-50 border-amber-200 text-amber-900"
-                      : "bg-violet-50 border-violet-200 text-violet-900"
+                      ? "border-amber-500/30 text-amber-200"
+                      : "border-violet-500/30 text-violet-200"
                   }`}
+                  style={{
+                    background: "rgba(255,255,255,0.07)",
+                    backdropFilter: "blur(12px)",
+                    WebkitBackdropFilter: "blur(12px)",
+                  }}
                 >
                   {b.message}
                 </div>

@@ -56,8 +56,8 @@ export default function HowItWorks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="relative rounded-2xl border border-border bg-white shadow-sm overflow-hidden mb-10"
-          style={{ height: "420px" }}
+          className="relative rounded-2xl overflow-hidden mb-10"
+          style={{ height: "460px", background: "#060B18", boxShadow: "0 0 0 1px rgba(37,99,235,0.2), 0 24px 60px rgba(6,11,24,0.5)" }}
         >
           <NetworkGraph variant="full" className="w-full h-full" />
 
@@ -66,16 +66,16 @@ export default function HowItWorks() {
             {LEGEND.map((l) => (
               <div key={l.label} className="flex items-center gap-1.5">
                 <span
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ background: l.color }}
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ background: l.color, boxShadow: `0 0 6px ${l.color}` }}
                 />
-                <span className="text-xs text-ink-faint">{l.label}</span>
+                <span className="text-xs text-white/40">{l.label}</span>
               </div>
             ))}
           </div>
 
           {/* Live badge */}
-          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/80 backdrop-blur-sm border border-border text-xs font-medium text-ink-light">
+          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-medium text-white/50" style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-live-dot" />
             Live relay simulation
           </div>
