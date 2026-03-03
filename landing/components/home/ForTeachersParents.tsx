@@ -82,7 +82,7 @@ export default function ForTeachersParents() {
               Parents get the experience they expect
             </h3>
             <p className="text-ink-light text-sm mb-6">
-              Telegram is already on their phone. No friction. No downloads.
+              Works on WhatsApp or Telegram. No friction. No downloads.
             </p>
             <BenefitList
               items={PARENT_BENEFITS}

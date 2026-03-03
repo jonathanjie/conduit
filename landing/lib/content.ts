@@ -35,17 +35,17 @@ export const HOW_IT_WORKS_STEPS = [
   {
     number: "01",
     title: "Parents message your bot",
-    body: "Parents find your center's Telegram bot via a unique deep-link. A one-time PDPA consent gate, and they're in — no app download required.",
+    body: "Parents connect via your center's Telegram or WhatsApp bot through a unique deep-link. A one-time PDPA consent gate, and they're in — no app download required.",
   },
   {
     number: "02",
     title: "Conduit routes anonymously",
-    body: "Every message is proxied through Conduit's relay engine. Context is injected automatically — teacher, subject, child's name. Neither party ever sees the other's real Telegram ID.",
+    body: "Every message is proxied through Conduit's relay engine. Context is injected automatically — teacher, subject, child's name. Neither party ever sees the other's real contact.",
   },
   {
     number: "03",
     title: "Teachers reply, parents receive",
-    body: "Teachers respond from their own Telegram. The reply threads back to the parent via the bot. Clean, fast, anonymous on both ends.",
+    body: "Teachers respond from their preferred messaging app. The reply threads back to the parent via the bot. Clean, fast, anonymous on both ends.",
   },
 ];
 
@@ -89,14 +89,14 @@ export const FEATURES = [
 ];
 
 export const TEACHER_BENEFITS = [
-  "No parent ever gets your personal Telegram handle",
+  "No parent ever gets your personal number or handle",
   "Student context injected automatically — no need to remember who's who",
   "AI handles routine after-hours questions, so you actually switch off",
   "Structured inbox: every parent message routed to the right teacher",
 ];
 
 export const PARENT_BENEFITS = [
-  "No app download — Telegram is already on your phone",
+  "No app download — works on WhatsApp or Telegram",
   "Reach your child's teacher directly, anytime",
   "24/7 AI support for homework questions (coming soon)",
   "Your data is protected under Singapore PDPA",
@@ -152,12 +152,12 @@ export const PRICING_TIERS = [
 
 export const FAQ_ITEMS = [
   {
-    q: "Do we need to create a new Telegram account?",
-    a: "Yes — one shared bot account for your center, registered via @BotFather. It takes about 5 minutes and we walk you through it during onboarding.",
+    q: "Do we need to create a new bot account?",
+    a: "Yes — one shared bot account for your center. For Telegram, registered via @BotFather (5 minutes). For WhatsApp, via the WhatsApp Business API. We walk you through it during onboarding.",
   },
   {
     q: "Can parents still reach teachers directly after joining?",
-    a: "No. That's the point. Conduit's architecture means there is no technical pathway for parents to obtain a teacher's personal Telegram ID.",
+    a: "No. That's the point. Conduit's architecture means there is no technical pathway for parents to obtain a teacher's personal number or handle.",
   },
   {
     q: "Is Conduit compliant with Singapore PDPA?",
@@ -173,7 +173,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: "How long does teacher onboarding take?",
-    a: "Under 5 minutes per teacher. They receive a deep-link, tap it in Telegram, and they're mapped and ready.",
+    a: "Under 5 minutes per teacher. They receive a deep-link, tap it in their messaging app, and they're mapped and ready.",
   },
   {
     q: "Can we use a custom bot name?",
