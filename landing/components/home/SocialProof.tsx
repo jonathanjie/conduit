@@ -19,7 +19,7 @@ export default function SocialProof() {
           <div className="hidden sm:block w-px h-4 bg-border" />
           <div className="flex items-center gap-4 flex-wrap justify-center">
             <span className="text-sm font-semibold text-ink px-3 py-1 rounded-md bg-white border border-border shadow-sm">
-              Math Mavens
+              Featured Center
             </span>
             {[1, 2, 3, 4].map((i) => (
               <span

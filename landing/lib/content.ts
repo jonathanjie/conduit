@@ -177,7 +177,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: "Can we use a custom bot name?",
-    a: "Yes — you register the bot under your center's brand (e.g. @MathMavens_bot). Conduit powers it behind the scenes.",
+    a: "Yes — you register the bot under your center's brand (e.g. @YourCenter_bot). Conduit powers it behind the scenes.",
   },
   {
     q: "How does billing work?",

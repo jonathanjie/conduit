@@ -129,7 +129,7 @@ export default function Hero() {
                   </svg>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-semibold leading-tight">MathMavens Bot</p>
+                  <p className="text-white text-sm font-semibold leading-tight">Your Tuition Bot</p>
                   <p className="text-white/60 text-xs">via Conduit · online</p>
                 </div>
                 <WhatsAppIcon size={22} />
