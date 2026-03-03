@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Fonts */
+  --font-display: "Bricolage Grotesque", sans-serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+
+  /* Conduit brand — Crewly-inspired warmth */
+  --color-primary: #1D4ED8;
+  --color-primary-light: #93C5FD;
+  --color-primary-deep: #1E3A8A;
+  --color-accent: #D97706;
+  --color-accent-light: #FDE68A;
+
+  /* Warm neutrals (Crewly-style) */
+  --color-cream: #FAFAF8;
+  --color-cream-warm: #F5F0EB;
+  --color-ink: #1E293B;
+  --color-ink-light: #64748B;
+  --color-ink-faint: #94A3B8;
+  --color-muted: #64748B;
+  --color-white: #FFFFFF;
+
+  /* Section backgrounds */
+  --color-bg: #FAFAF8;
+  --color-bg-alt: #F5F0EB;
+  --color-bg-dark: #0F172A;
+  --color-bg-dark-surface: #1E293B;
+}
+
+/* Base */
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+}
+
+/* Grain overlay — Crewly signature */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* CTA pulse */
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 40%, transparent); }
+  50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-primary) 0%, transparent); }
+}
+.animate-cta-pulse { animation: ctaPulse 2.5s ease-in-out infinite; }
+
+/* Live dot */
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+.animate-live-dot { animation: livePulse 2s ease-in-out infinite; }
+
+/* Blob float */
+@keyframes blobFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.03); }
+}
+.animate-blob { animation: blobFloat 8s ease-in-out infinite; }
+.animate-blob-delay { animation: blobFloat 8s ease-in-out 2s infinite; }
+
+/* Accordion */
+.accordion-content {
+  overflow: hidden;
+  transition: height 0.3s ease;
+}
