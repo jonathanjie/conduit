@@ -29,7 +29,7 @@ function BenefitList({
 
 export default function ForTeachersParents() {
   return (
-    <section className="bg-cream-warm py-24 md:py-32 px-6">
+    <section className="bg-bg-warm py-24 md:py-32 px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div
           variants={fadeInUp}

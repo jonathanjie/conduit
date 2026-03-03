@@ -1,5 +1,5 @@
 "use client";
-import { NAV_LINKS, DEMO_URL } from "@/lib/content";
+import { DEMO_URL } from "@/lib/content";
 
 const FOOTER_LINKS = {
   Product: [
@@ -10,7 +10,7 @@ const FOOTER_LINKS = {
   ],
   Company: [
     { label: "About", href: "#" },
-    { label: "Contact", href: `mailto:hello@conduit.app` },
+    { label: "Contact", href: "mailto:hello@conduit.app" },
   ],
   Legal: [
     { label: "Privacy Policy", href: "#" },
@@ -26,21 +26,24 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-primary" />
-                <span className="w-2.5 h-2.5 rounded-full bg-accent" />
-                <span className="w-2.5 h-2.5 rounded-full bg-primary-light" />
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <circle cx="3" cy="8" r="2" fill="white" />
+                  <circle cx="13" cy="4" r="2" fill="white" opacity="0.7" />
+                  <circle cx="13" cy="12" r="2" fill="white" opacity="0.7" />
+                  <path d="M5 8H9M9 8L7 6M9 8L7 10" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
+                  <path d="M5 7.5L11 4.5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+                  <path d="M5 8.5L11 11.5" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+                </svg>
               </div>
-              <span className="font-display font-bold text-white text-lg">Conduit</span>
+              <span className="font-display font-bold text-white text-base">Conduit</span>
             </div>
             <p className="text-white/50 text-sm leading-relaxed">
               Secure teacher-parent communication for Singapore tuition centers.
             </p>
-            <div className="flex items-center gap-1.5 mt-4">
-              <span className="w-4 h-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-live-dot" />
-              </span>
+            <div className="flex items-center gap-2 mt-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-live-dot" />
               <span className="text-white/40 text-xs">PDPA Compliant</span>
             </div>
           </div>
@@ -58,7 +61,7 @@ export default function Footer() {
                       href={l.href}
                       target={"external" in l && l.external ? "_blank" : undefined}
                       rel={"external" in l && l.external ? "noopener noreferrer" : undefined}
-                      className="text-white/60 text-sm hover:text-white transition-colors"
+                      className="text-white/55 text-sm hover:text-white/90 transition-colors"
                     >
                       {l.label}
                     </a>
@@ -69,7 +72,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-white/[0.07] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-white/[0.08] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-white/30 text-xs">
             © {new Date().getFullYear()} Conduit. All rights reserved.
           </p>

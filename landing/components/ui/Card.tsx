@@ -16,14 +16,12 @@ export default function Card({
   accentTop,
 }: CardProps) {
   const base = dark
-    ? "rounded-2xl p-6 bg-white/[0.05] border border-white/[0.08]"
-    : "rounded-2xl p-6 bg-white border border-ink/[0.07] shadow-sm";
+    ? "rounded-xl p-6 bg-white/[0.06] border border-white/10"
+    : "rounded-xl p-6 bg-white border border-border shadow-sm hover:shadow-md transition-shadow duration-200";
 
   return (
     <motion.div
       variants={staggerItem}
-      whileHover={{ scale: 1.02, y: -2 }}
-      transition={{ duration: 0.2 }}
       className={`${base} ${className}`}
       style={
         accentTop

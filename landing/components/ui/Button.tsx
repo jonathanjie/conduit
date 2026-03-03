@@ -21,23 +21,21 @@ export default function Button({
   rel,
 }: ButtonProps) {
   const base =
-    "inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 cursor-pointer";
+    "inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 cursor-pointer";
   const styles: Record<Variant, string> = {
-    primary: `${base} bg-primary text-white hover:bg-primary-deep shadow-lg shadow-primary/20 animate-cta-pulse`,
-    ghost: `${base} border border-ink/20 text-ink hover:bg-ink/5`,
-    "ghost-dark": `${base} border border-white/20 text-white hover:bg-white/10`,
+    primary: `${base} bg-primary text-white hover:bg-primary-deep shadow-md shadow-primary/25 animate-cta-pulse`,
+    ghost: `${base} border border-border text-ink hover:bg-bg-alt`,
+    "ghost-dark": `${base} border border-white/25 text-white hover:bg-white/10`,
   };
-
-  const classes = `${styles[variant]} ${className}`;
 
   return (
     <motion.a
       href={href}
-      className={classes}
+      className={`${styles[variant]} ${className}`}
       target={target}
       rel={rel}
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
     >
       {children}
     </motion.a>

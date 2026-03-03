@@ -6,19 +6,26 @@ import { DEMO_URL } from "@/lib/content";
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-cream px-6 pt-24 pb-16">
-      {/* Warm background blobs */}
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-white px-6 pt-24 pb-16">
+      {/* Subtle background gradient — blue tint top-right only */}
       <div
-        className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] rounded-full opacity-20 blur-3xl animate-blob"
-        style={{ background: "radial-gradient(circle, var(--color-primary-light), transparent)" }}
+        className="absolute top-0 right-0 w-[700px] h-[500px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse at top right, #EFF6FF 0%, transparent 70%)",
+        }}
       />
+      {/* Warm amber accent bottom-left */}
       <div
-        className="absolute bottom-[-5%] left-[-5%] w-[500px] h-[500px] rounded-full opacity-15 blur-3xl animate-blob-delay"
-        style={{ background: "radial-gradient(circle, var(--color-accent-light), transparent)" }}
+        className="absolute bottom-0 left-0 w-[400px] h-[300px] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse at bottom left, #FFFBEB 0%, transparent 70%)",
+        }}
       />
 
-      <div className="max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-6xl mx-auto w-full relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left: copy */}
           <motion.div
             variants={staggerContainer}
@@ -28,7 +35,7 @@ export default function Hero() {
           >
             {/* Badge */}
             <motion.div variants={staggerItem}>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-semibold bg-primary-muted text-primary border border-primary/15">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-live-dot" />
                 Built for Singapore Tuition Centers
               </span>
@@ -37,33 +44,10 @@ export default function Hero() {
             {/* Headline */}
             <motion.h1
               variants={staggerItem}
-              className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.05] text-ink"
+              className="font-display text-5xl sm:text-6xl font-bold leading-[1.1] text-ink"
             >
-              Protect your{" "}
-              <span className="text-primary">teachers.</span>
-              <br />
-              Streamline every{" "}
-              <span
-                className="relative inline-block"
-                style={{ color: "var(--color-accent)" }}
-              >
-                conversation.
-                {/* Doodle underline */}
-                <svg
-                  className="absolute -bottom-2 left-0 w-full"
-                  viewBox="0 0 300 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2 9C50 3 100 2 150 5C200 8 250 4 298 2"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    opacity="0.6"
-                  />
-                </svg>
-              </span>
+              Protect your teachers.{" "}
+              <span className="text-gradient">Streamline every conversation.</span>
             </motion.h1>
 
             {/* Subheadline */}
@@ -91,73 +75,109 @@ export default function Hero() {
               </Button>
             </motion.div>
 
-            {/* Trust micro-copy */}
-            <motion.p variants={staggerItem} className="text-xs text-ink-faint">
-              🔒 PDPA compliant · No app download required · Setup in under a week
-            </motion.p>
+            {/* Trust strip */}
+            <motion.div
+              variants={staggerItem}
+              className="flex flex-wrap gap-4 pt-2"
+            >
+              {[
+                "🔒 PDPA compliant",
+                "📱 No app download",
+                "⚡ Setup in under a week",
+              ].map((t) => (
+                <span key={t} className="text-xs text-ink-faint font-medium">
+                  {t}
+                </span>
+              ))}
+            </motion.div>
           </motion.div>
 
-          {/* Right: visual mockup */}
+          {/* Right: relay diagram */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            className="relative hidden lg:block"
+            transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
+            className="hidden lg:block"
           >
-            {/* Telegram chat mockup */}
-            <div className="relative">
-              <div className="absolute inset-0 rounded-3xl bg-primary/5 blur-xl" />
-              <div className="relative rounded-3xl bg-white border border-ink/[0.07] shadow-xl overflow-hidden">
-                <div className="bg-primary px-4 py-3 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold">
-                    M
+            <div className="relative bg-bg-alt rounded-2xl border border-border p-8">
+              {/* Header */}
+              <p className="text-xs font-semibold text-ink-faint uppercase tracking-wider mb-6">
+                Message relay — anonymous on both ends
+              </p>
+
+              {/* Relay flow */}
+              <div className="space-y-3">
+                {/* Parent message */}
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-accent-light flex items-center justify-center text-sm flex-shrink-0 mt-0.5">
+                    👩
                   </div>
-                  <div>
-                    <p className="text-white text-sm font-semibold">@MathMavens_bot</p>
-                    <p className="text-white/70 text-xs">Online</p>
+                  <div className="flex-1 bg-white rounded-xl rounded-tl-sm p-3 border border-border shadow-sm">
+                    <p className="text-xs text-ink-faint mb-0.5 font-medium">Parent</p>
+                    <p className="text-sm text-ink">Hi, Emma struggled with homework today. Can we schedule a call?</p>
                   </div>
                 </div>
-                <div className="p-4 space-y-3 bg-cream-warm min-h-[280px]">
-                  <div className="flex justify-start">
-                    <div className="bg-white rounded-2xl rounded-tl-sm px-3 py-2 max-w-[75%] shadow-sm">
-                      <p className="text-xs text-ink-light mb-0.5">Parent (Emma&apos;s mum)</p>
-                      <p className="text-sm text-ink">Hi, Emma struggled with her homework today. Can we schedule a call?</p>
-                      <p className="text-xs text-ink-faint text-right mt-1">2:34 PM</p>
-                    </div>
+
+                {/* Conduit relay indicator */}
+                <div className="flex items-center gap-3 py-1">
+                  <div className="w-8 flex-shrink-0 flex justify-center">
+                    <div className="w-px h-6 bg-border" />
                   </div>
-                  <div className="flex justify-end">
-                    <div className="bg-primary rounded-2xl rounded-tr-sm px-3 py-2 max-w-[75%]">
-                      <p className="text-xs text-white/70 mb-0.5">Mrs Tan (Math)</p>
-                      <p className="text-sm text-white">Sure! I&apos;m free Thursday 4–5pm. Does that work for Emma?</p>
-                      <p className="text-xs text-white/60 text-right mt-1">2:41 PM ✓✓</p>
-                    </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary-muted border border-primary/15">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6h8M7 4l2 2-2 2" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span className="text-xs font-semibold text-primary">
+                      Conduit relays anonymously
+                    </span>
                   </div>
-                  <div className="flex justify-start">
-                    <div className="bg-white rounded-2xl rounded-tl-sm px-3 py-2 max-w-[75%] shadow-sm">
-                      <p className="text-sm text-ink">Perfect, Thursday works!</p>
-                      <p className="text-xs text-ink-faint text-right mt-1">2:43 PM</p>
-                    </div>
+                </div>
+
+                {/* Teacher message */}
+                <div className="flex items-start gap-3 flex-row-reverse">
+                  <div className="w-8 h-8 rounded-lg bg-primary-muted flex items-center justify-center text-sm flex-shrink-0 mt-0.5">
+                    👩‍🏫
+                  </div>
+                  <div className="flex-1 bg-primary rounded-xl rounded-tr-sm p-3">
+                    <p className="text-xs text-white/60 mb-0.5 font-medium text-right">Teacher (Mrs Tan)</p>
+                    <p className="text-sm text-white text-right">Sure! I'm free Thursday 4–5pm. Does that work for Emma?</p>
+                  </div>
+                </div>
+
+                {/* Conduit relay indicator */}
+                <div className="flex items-center gap-3 py-1 flex-row-reverse">
+                  <div className="w-8 flex-shrink-0 flex justify-center">
+                    <div className="w-px h-6 bg-border" />
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary-muted border border-primary/15">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M10 6H2M5 8L3 6l2-2" stroke="#2563EB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span className="text-xs font-semibold text-primary">
+                      Reply routed back to parent
+                    </span>
+                  </div>
+                </div>
+
+                {/* Parent receives */}
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-accent-light flex items-center justify-center text-sm flex-shrink-0 mt-0.5">
+                    👩
+                  </div>
+                  <div className="flex-1 bg-white rounded-xl rounded-tl-sm p-3 border border-border shadow-sm">
+                    <p className="text-sm text-ink">Perfect, Thursday works! 🙏</p>
                   </div>
                 </div>
               </div>
 
-              {/* Floating badge: "No personal numbers shared" */}
-              <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-4 top-1/3 bg-white rounded-xl px-3 py-2 shadow-lg border border-ink/[0.07] text-xs font-medium text-ink whitespace-nowrap"
-              >
-                🔒 No personal numbers shared
-              </motion.div>
-
-              {/* Floating badge: "PDPA Compliant" */}
-              <motion.div
-                animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -left-4 bottom-12 bg-white rounded-xl px-3 py-2 shadow-lg border border-ink/[0.07] text-xs font-medium text-ink whitespace-nowrap"
-              >
-                ✅ PDPA Compliant
-              </motion.div>
+              {/* Footer note */}
+              <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs text-ink-faint">
+                <span>Neither party sees the other's Telegram ID</span>
+                <span className="flex items-center gap-1.5 font-medium text-green-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-live-dot" />
+                  PDPA compliant
+                </span>
+              </div>
             </div>
           </motion.div>
         </div>
