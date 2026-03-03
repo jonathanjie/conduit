@@ -11,14 +11,6 @@ export default function Hero() {
       {/* Organic force graph — absolute behind all content */}
       <ForceGraph className="absolute inset-0 w-full h-full" />
 
-      {/* Soft left-side fade so hero text stays crisp */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(to right, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.80) 30%, rgba(255,255,255,0.25) 60%, rgba(255,255,255,0) 100%)",
-        }}
-      />
 
       <div className="max-w-6xl mx-auto w-full relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
