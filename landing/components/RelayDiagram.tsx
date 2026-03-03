@@ -241,9 +241,6 @@ export default function RelayDiagram({ className }: { className?: string }) {
           <g transform="translate(790,448)" fill="#7C3AED" opacity="0.75"><circle cy="-7" r="5.5"/><path d="M-7,3 C-7,-4 7,-4 7,3"/></g>
         </g>
 
-        {/* ── Labels: Teachers ─────────────────────────────────── */}
-        <text x="900" y="290" fill="#6B7280" fontSize="11" fontWeight="600" fontFamily="Inter, sans-serif">TEACHERS</text>
-        <text x="900" y="310" fill="#374151" fontSize="14" fontWeight="700" fontFamily="Sora, sans-serif">Teacher Nodes</text>
 
         {/* ── Decorative circuit traces ─────────────────────────── */}
         <g opacity="0.06" stroke="#2563EB" strokeWidth="1" fill="none">
@@ -260,9 +257,9 @@ export default function RelayDiagram({ className }: { className?: string }) {
           <circle cx="90" cy="590" r="5" fill="#2563EB" opacity="0.2" />
           <circle cx="90" cy="590" r="3" fill="#2563EB" opacity="0.5" />
           <text x="104" y="594" fill="#6B7280" fontSize="11" fontFamily="Inter, sans-serif">PDPA Compliant</text>
-          <circle cx="830" cy="590" r="5" fill="#2563EB" opacity="0.2" />
-          <circle cx="830" cy="590" r="3" fill="#2563EB" opacity="0.5" />
-          <text x="844" y="594" fill="#6B7280" fontSize="11" fontFamily="Inter, sans-serif">Secure &amp; Anonymous Routing</text>
+          <circle cx="960" cy="590" r="5" fill="#2563EB" opacity="0.2" />
+          <circle cx="960" cy="590" r="3" fill="#2563EB" opacity="0.5" />
+          <text x="946" y="594" textAnchor="end" fill="#6B7280" fontSize="11" fontFamily="Inter, sans-serif">Secure &amp; Anonymous Routing</text>
         </g>
       </svg>
 
