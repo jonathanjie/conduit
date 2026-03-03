@@ -1,87 +1,110 @@
 "use client";
 import { motion } from "framer-motion";
-import { fadeInUp, staggerContainer, staggerItem } from "@/lib/animations";
-import { HOW_IT_WORKS_STEPS } from "@/lib/content";
+import { fadeInUp } from "@/lib/animations";
+import NetworkGraph from "@/components/NetworkGraph";
+
+const STEPS = [
+  {
+    number: "01",
+    title: "Parents message your bot",
+    body: "Via a deep-link in Telegram. One-time PDPA consent gate, then they're in — no app download.",
+  },
+  {
+    number: "02",
+    title: "Conduit routes anonymously",
+    body: "Every message is proxied. Context injected automatically. Neither party ever sees the other's real Telegram ID.",
+  },
+  {
+    number: "03",
+    title: "Teachers reply, parents receive",
+    body: "Responses thread back to the parent via the bot. Clean, fast, anonymous on both ends.",
+  },
+];
+
+const LEGEND = [
+  { color: "#F59E0B", label: "Parent node" },
+  { color: "#2563EB", label: "Conduit relay layer" },
+  { color: "#7C3AED", label: "Teacher node" },
+];
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-cream-warm py-24 md:py-32 px-6">
+    <section id="how-it-works" className="bg-bg-alt py-24 md:py-32 px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div
           variants={fadeInUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4">
+          <span className="inline-block px-3 py-1 rounded-md text-xs font-semibold bg-primary/10 text-primary border border-primary/15 mb-4">
             The Solution
           </span>
           <h2 className="font-display text-4xl md:text-5xl font-bold text-ink mb-4">
             How Conduit works
           </h2>
           <p className="text-ink-light text-lg max-w-xl mx-auto">
-            Three steps. Neither party ever sees the other&apos;s real Telegram ID.
+            9 parents. 3 teachers. Every message routed anonymously through a
+            single relay layer — neither side ever connected directly.
           </p>
         </motion.div>
 
+        {/* Animated graph */}
         <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 relative"
+          transition={{ duration: 0.7 }}
+          className="relative rounded-2xl border border-border bg-white shadow-sm overflow-hidden mb-10"
+          style={{ height: "420px" }}
         >
-          {HOW_IT_WORKS_STEPS.map((step, i) => (
-            <motion.div key={step.number} variants={staggerItem} className="relative">
-              {/* Connector line */}
-              {i < HOW_IT_WORKS_STEPS.length - 1 && (
-                <div className="hidden md:block absolute top-8 left-[calc(100%+0px)] w-8 h-px bg-ink/20 z-10" />
-              )}
+          <NetworkGraph variant="full" className="w-full h-full" />
 
-              <div className="bg-white rounded-3xl p-8 border border-ink/[0.07] shadow-sm h-full">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
-                  <span className="font-display text-sm font-bold text-primary">
-                    {step.number}
-                  </span>
-                </div>
-                <h3 className="font-display text-xl font-bold text-ink mb-3">
-                  {step.title}
-                </h3>
-                <p className="text-ink-light leading-relaxed text-sm">
-                  {step.body}
-                </p>
+          {/* Legend */}
+          <div className="absolute bottom-4 left-4 flex items-center gap-4">
+            {LEGEND.map((l) => (
+              <div key={l.label} className="flex items-center gap-1.5">
+                <span
+                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                  style={{ background: l.color }}
+                />
+                <span className="text-xs text-ink-faint">{l.label}</span>
               </div>
-            </motion.div>
-          ))}
+            ))}
+          </div>
+
+          {/* Live badge */}
+          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/80 backdrop-blur-sm border border-border text-xs font-medium text-ink-light">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-live-dot" />
+            Live relay simulation
+          </div>
         </motion.div>
 
-        {/* Flow diagram */}
+        {/* 3-step descriptions */}
         <motion.div
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-12 flex flex-wrap items-center justify-center gap-2 text-sm font-medium"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
-          {["Parent", "→", "@YourBot", "→", "Conduit Engine", "→", "Teacher", "→", "@YourBot", "→", "Parent"].map(
-            (node, i) => (
-              node === "→" ? (
-                <span key={i} className="text-ink-faint">→</span>
-              ) : (
-                <span
-                  key={i}
-                  className={`px-3 py-1.5 rounded-full border text-xs ${
-                    node === "Conduit Engine"
-                      ? "bg-primary text-white border-primary font-semibold"
-                      : "bg-white border-ink/[0.1] text-ink-light"
-                  }`}
-                >
-                  {node}
-                </span>
-              )
-            )
-          )}
+          {STEPS.map((step) => (
+            <div
+              key={step.number}
+              className="flex gap-4 p-5 rounded-xl bg-white border border-border"
+            >
+              <span className="font-display text-2xl font-bold text-primary/20 flex-shrink-0 leading-none mt-0.5">
+                {step.number}
+              </span>
+              <div>
+                <h3 className="font-display text-base font-bold text-ink mb-1">
+                  {step.title}
+                </h3>
+                <p className="text-ink-light text-sm leading-relaxed">{step.body}</p>
+              </div>
+            </div>
+          ))}
         </motion.div>
       </div>
     </section>
