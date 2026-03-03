@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/animations";
-import NetworkGraph from "@/components/NetworkGraph";
+import RelayDiagram from "@/components/RelayDiagram";
 
 const STEPS = [
   {
@@ -19,12 +19,6 @@ const STEPS = [
     title: "Teachers reply, parents receive",
     body: "Responses thread back to the parent via the bot. Clean, fast, anonymous on both ends.",
   },
-];
-
-const LEGEND = [
-  { color: "#F59E0B", label: "Parent node" },
-  { color: "#2563EB", label: "Conduit relay layer" },
-  { color: "#7C3AED", label: "Teacher node" },
 ];
 
 export default function HowItWorks() {
@@ -50,35 +44,15 @@ export default function HowItWorks() {
           </p>
         </motion.div>
 
-        {/* Animated graph */}
+        {/* Relay diagram */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="relative rounded-2xl overflow-hidden mb-10"
-          style={{ height: "460px", background: "#060B18", boxShadow: "0 0 0 1px rgba(37,99,235,0.2), 0 24px 60px rgba(6,11,24,0.5)" }}
+          className="relative rounded-2xl overflow-hidden mb-10 border border-border bg-white shadow-sm"
         >
-          <NetworkGraph variant="full" className="w-full h-full" />
-
-          {/* Legend */}
-          <div className="absolute bottom-4 left-4 flex items-center gap-4">
-            {LEGEND.map((l) => (
-              <div key={l.label} className="flex items-center gap-1.5">
-                <span
-                  className="w-2 h-2 rounded-full flex-shrink-0"
-                  style={{ background: l.color, boxShadow: `0 0 6px ${l.color}` }}
-                />
-                <span className="text-xs text-white/40">{l.label}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Live badge */}
-          <div className="absolute top-4 right-4 flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-medium text-white/50" style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-live-dot" />
-            Live relay simulation
-          </div>
+          <RelayDiagram className="w-full" />
         </motion.div>
 
         {/* 3-step descriptions */}
