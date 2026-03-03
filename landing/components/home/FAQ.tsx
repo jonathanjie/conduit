@@ -8,7 +8,13 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="bg-cream-warm py-24 md:py-32 px-6">
+    <section
+      id="faq"
+      className="relative py-24 md:py-32 px-6 overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, #FEF3C7 0%, #FEF08A 50%, #FEF3C7 100%)",
+      }}
+    >
       <div className="max-w-3xl mx-auto">
         <motion.div
           variants={fadeInUp}

@@ -4,7 +4,12 @@ import { fadeIn } from "@/lib/animations";
 
 export default function SocialProof() {
   return (
-    <section className="bg-bg-alt py-8 border-y border-border">
+    <section
+      className="py-8 border-y border-border overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, #F8FAFF 0%, #F0F9FF 100%)",
+      }}
+    >
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           variants={fadeIn}

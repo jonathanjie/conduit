@@ -6,7 +6,13 @@ import { FEATURES } from "@/lib/content";
 
 export default function Features() {
   return (
-    <section id="features" className="bg-cream py-24 md:py-32 px-6">
+    <section
+      id="features"
+      className="relative py-24 md:py-32 px-6 overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, #FFFBEB 0%, #FFF5F0 50%, #FFFBEB 100%)",
+      }}
+    >
       <div className="max-w-6xl mx-auto">
         <motion.div
           variants={fadeInUp}

@@ -81,3 +81,56 @@ h1, h2, h3, h4 {
 }
 .animate-float { animation: floatY 4s ease-in-out infinite; }
 .animate-float-slow { animation: floatY 6s ease-in-out 1s infinite; }
+
+/* Hero background animated gradient */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    #FFFFFF 0%,
+    #F0F9FF 25%,
+    #FFFFFF 50%,
+    #FEF3C7 75%,
+    #FFFFFF 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 25s ease infinite;
+}
+
+/* Animated blob for backgrounds */
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.05); }
+  50% { transform: translate(-20px, 30px) scale(0.95); }
+  75% { transform: translate(-30px, -30px) scale(1.02); }
+}
+
+.blob {
+  position: absolute;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  filter: blur(40px);
+  animation: blobFloat 15s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.blob-1 {
+  width: 300px;
+  height: 300px;
+  animation-delay: 0s;
+}
+
+.blob-2 {
+  width: 250px;
+  height: 250px;
+  animation-delay: 2s;
+}
+
+.blob-3 {
+  width: 200px;
+  height: 200px;
+  animation-delay: 4s;
+}

@@ -23,7 +23,13 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-bg-alt py-24 md:py-32 px-6">
+    <section
+      id="how-it-works"
+      className="relative py-24 md:py-32 px-6 overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, #F8FAFF 0%, #EFF6FF 50%, #F8FAFF 100%)",
+      }}
+    >
       <div className="max-w-6xl mx-auto">
         <motion.div
           variants={fadeInUp}

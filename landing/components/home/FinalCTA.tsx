@@ -6,7 +6,12 @@ import { DEMO_URL } from "@/lib/content";
 
 export default function FinalCTA() {
   return (
-    <section className="bg-bg-dark py-24 md:py-32 px-6 relative overflow-hidden">
+    <section
+      className="py-24 md:py-32 px-6 relative overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, #1E1B4B 0%, #2E2A5A 50%, #1E1B4B 100%)",
+      }}
+    >
       {/* Subtle warm glow */}
       <div
         className="absolute top-0 right-0 w-[600px] h-[400px] pointer-events-none"
